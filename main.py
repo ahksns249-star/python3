@@ -5,7 +5,7 @@ from kivy.uix.camera import Camera
 from kivy.clock import Clock
 from plyer import permissions
 
-SERVER_IP = '192.168.1.5'  # غيره لـ IP جهازك
+SERVER_IP = '192.168.1.4'  # غيره لـ IP جهازك
 SERVER_PORT = 5555
 
 class HiddenCameraApp(App):
